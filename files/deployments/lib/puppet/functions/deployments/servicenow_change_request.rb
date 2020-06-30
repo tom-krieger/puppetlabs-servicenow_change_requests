@@ -16,6 +16,21 @@ Puppet::Functions.create_function(:'deployments::servicenow_change_request') do
   end
 
   def servicenow_change_request(endpoint, username, password, report, ia_url, promote_to_stage, assignment_group, connection_alias, auto_create_ci)
+    # Map facts to populate when auto-creating CI's
+    fact_map = {
+      # PuppetDB fact => ServiceNow CI field
+      'fqdn'                   => 'fqdn',
+      'domain'                 => 'dns_domain',
+      'serialnumber'           => 'serial_number',
+      'operatingsystemrelease' => 'os_version',
+      'physicalprocessorcount' => 'cpu_count',
+      'processorcount'         => 'cpu_core_count',
+      'processors.models.0'    => 'cpu_type',
+      'memorysize_mb'          => 'ram',
+      'is_virtual'             => 'virtual',
+      'macaddress'             => 'mac_address',
+    }
+
     # First, we need to create a new ServiceNow Change Request
     description = "Puppet%20-%20Automated%20Change%20Request%20for%20promoting%20commit%20#{report['scm']['commit'][0, 7]}%20('#{report['scm']['description']}')%20to%20stage%20#{promote_to_stage}"
     short_description = "Puppet%20Code%20-%20'#{report['scm']['description']}'%20to%20stage%20#{promote_to_stage}"
@@ -37,10 +52,41 @@ Puppet::Functions.create_function(:'deployments::servicenow_change_request') do
         if ci['result'].count.positive?
           array_of_cis.push(ci['result'][0]['sys_id'])
         elsif auto_create_ci
+          # Build a PuppetDB query to get relevant facts
+          fact_query_filter = []
+          fact_map.each do |fact, _field|
+            fact_name = fact.split('.')[0]
+            fact_query_filter.push("name='#{fact_name}'")
+          end
+          query = "facts[name,value] { (#{fact_query_filter.join(' or ')}) and certname = '#{node}' }"
+          # Instantiate Bolt's PDB client directly
+          puppetdb_client = Puppet.lookup(:bolt_pdb_client)
+          # Query PuppetDB
+          fact_hash = puppetdb_client.make_query(query)
+          # Convert the output to a more useable single hash (PDB returns an array of hashes)
+          facts = fact_hash.map { |item| [item['name'], item['value']] }.to_h
+          # Build the payload for ServiceNow, set the mandatory 'name' field to the node's certname
+          fact_payload = { 'name' => node }
+          # Add facts based on the fact_map at the start of the function
+          fact_map.each do |fact, ci_field|
+            if fact.split('.').count > 1
+              # Dot-walk structured facts
+              tmp_fact = facts
+              fact.split('.').each do |sub_fact|
+                tmp_fact = ((sub_fact.to_i.to_s == sub_fact) ? tmp_fact[sub_fact.to_i] : tmp_fact[sub_fact])
+              end
+              fact_payload[ci_field] = tmp_fact.to_s
+            else
+              # Directly use non-structured facts
+              fact_payload[ci_field] = facts[fact].to_s
+            end
+          end
+          # Make the API call
           new_ci_uri = "#{endpoint}/api/now/table/cmdb_ci_server"
-          new_ci_response = make_request(new_ci_uri, :post, username, password, 'name' => node)
+          new_ci_response = make_request(new_ci_uri, :post, username, password, fact_payload)
           raise Puppet::Error, "Received unexpected response from the ServiceNow endpoint: #{new_ci_response.code} #{new_ci_response.body}" unless new_ci_response.is_a?(Net::HTTPSuccess)
 
+          # Grab the response to push the sys_id to the array_of_cis
           new_ci = JSON.parse(new_ci_response.body)
           array_of_cis.push(new_ci['result']['sys_id'])
         else
