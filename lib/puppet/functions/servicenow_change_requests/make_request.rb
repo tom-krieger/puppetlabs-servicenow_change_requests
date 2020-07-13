@@ -42,7 +42,7 @@ Puppet::Functions.create_function(:'servicenow_change_requests::make_request') d
         else
           raise Puppet::Error, "servicenow_change_request#make_request called with invalid request type #{type}"
         end
-        request.basic_auth(username, password) #password.unwrap when Sensitive
+        request.basic_auth(username, password) # password.unwrap when Sensitive
         request['Content-Type'] = 'application/json'
         request['Accept'] = 'application/json'
         response = connection.request(request)
