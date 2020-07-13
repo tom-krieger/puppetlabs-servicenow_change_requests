@@ -6,6 +6,7 @@
   "license": "Apache-2.0",
   "source": "https://forge.puppet.com/puppetlabs/servicenow_change_requests",
   "project_page": "https://github.com/puppetlabs/puppetlabs-servicenow_change_requests",
+  "issues_url": "https://github.com/puppetlabs/puppetlabs-servicenow_change_requests/issues",
   "dependencies": [],
   "operatingsystem_support": [
     {
