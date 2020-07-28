@@ -84,7 +84,7 @@ The plan will create a dummy credential in ServiceNow, for the user `change.me@c
 
 Once ServiceNow has been prepared, we can setup the integration in CD4PE. This integration makes use of CD4PE's Impact Analysis feature, to determine which nodes are affected by a Puppet code change. A typical pipeline might look like this before the integration:
 
-![CD4PE Typical Pipeline](examples/cd4pe_pipeline_before.png)
+![CD4PE Typical Pipeline](https://raw.githubusercontent.com/puppetlabs/puppetlabs-servicenow_change_requests/master/examples/cd4pe_pipeline_before.png)
 
 >In this pipeline, the Impact Analysis has been configured to analyse the `production` environment.
 
@@ -92,7 +92,7 @@ With the ServiceNow integration, we will add a step between the "Impact Analysis
 
 With the added stage, the pipeline looks like this:
 
-![CD4PE Pipeline with ServiceNow integration](examples/cd4pe_pipeline_after.png)
+![CD4PE Pipeline with ServiceNow integration](https://raw.githubusercontent.com/puppetlabs/puppetlabs-servicenow_change_requests/master/examples/cd4pe_pipeline_after.png)
 
 
 #### Adding the custom deployment policy to CD4PE
