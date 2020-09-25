@@ -2,11 +2,24 @@
 
 All notable changes to this project will be documented in this file.
 
+## Release 0.1.4
+
+**Features**
+
+Add re-triggerable condition to Business Rule for ability to re-run orchestration on a change ticket when desired
+
+**Bugfixes**
+
+Dynamically handle definition of ENDPOINT variable in Business Rule
+
+Correctly handle cookies from CD4PE 3.x and 4.x
+
 ## Release 0.1.3
 
 **Bugfixes**
 
 Ensure image URLs resolve correctly on the Puppet Forge
+
 Update changelog
 
 ## Release 0.1.2
