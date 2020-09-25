@@ -61,7 +61,11 @@
         }
 
         // Set cookie
-        cookie = result.headers["Set-Cookie"];
+        if (result.headers["Set-Cookie"]){
+            cookie = result.headers["Set-Cookie"];
+        } else {
+            cookie = result.headers["set-cookie"];
+        }
 
         // Set base payload for pipeline promotion
         postData.op = 'PipelinePromote';
@@ -214,13 +218,20 @@
     var params_hash = JSON.parse(current.close_notes);
     var aliasID = GetIDValue('sys_alias', params_hash.connection);
 
-	var provider = new sn_cc.ConnectionInfoProvider();
-	var connectionInfo = provider.getConnectionInfo(aliasID);
+    var provider = new sn_cc.ConnectionInfoProvider();
+    var connectionInfo = provider.getConnectionInfo(aliasID);
 
     var HOST        = String(connectionInfo.getAttribute("host"));
-	var PORT        = String(connectionInfo.getAttribute("port"));
-	var PROTO       = String(connectionInfo.getAttribute("protocol")); 
-    var endpoint    = PROTO + '://' + HOST + ':' + PORT;
+    var PORT        = String(connectionInfo.getAttribute("port"));
+    var PROTO       = String(connectionInfo.getAttribute("protocol")); 
+
+    var endpoint;
+    if (PORT) {
+        endpoint    = PROTO + '://' + HOST + ':' + PORT;
+    } else {
+        endpoint    = PROTO + '://' + HOST;
+    }
+
     var username    = String(connectionInfo.getCredentialAttribute("user_name"));
     var password    = String(connectionInfo.getCredentialAttribute("password"));
     var workspace   = params_hash.workspace;
