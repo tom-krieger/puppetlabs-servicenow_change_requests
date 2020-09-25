@@ -4,6 +4,7 @@ This module helps you automate change requests in ServiceNow from Continuous Del
 * Madrid
 * New York
 * Orlando
+* Paris
 
 The intended workflow that this module enables, is as follows:
 
