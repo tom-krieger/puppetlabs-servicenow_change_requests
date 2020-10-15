@@ -6,7 +6,7 @@ All notable changes to this project will be documented in this file.
 
 **Features**
 
-Enable more detailed logging from the Busines Rule in ServiceNow
+Enable more detailed logging from the Business Rule in ServiceNow
 
 **Bugfixes**
 
