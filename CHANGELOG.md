@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file.
 
+## Release 0.1.5
+
+**Features**
+
+Enable more detailed logging from the Busines Rule in ServiceNow
+
+**Bugfixes**
+
+Correctly handle insufficient permissions in CD4PE
+
+Wait for completion on deployments that do not require approval
+
 ## Release 0.1.4
 
 **Features**

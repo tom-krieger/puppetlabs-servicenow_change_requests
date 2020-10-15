@@ -1,13 +1,15 @@
 {
   "name": "puppetlabs-servicenow_change_requests",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "author": "puppetlabs",
   "summary": "Automate change requests in ServiceNow from CD4PE pipelines",
   "license": "Apache-2.0",
   "source": "https://forge.puppet.com/puppetlabs/servicenow_change_requests",
   "project_page": "https://github.com/puppetlabs/puppetlabs-servicenow_change_requests",
   "issues_url": "https://github.com/puppetlabs/puppetlabs-servicenow_change_requests/issues",
-  "dependencies": [],
+  "dependencies": [
+
+  ],
   "operatingsystem_support": [
     {
       "operatingsystem": "CentOS",
@@ -57,7 +59,7 @@
       "version_requirement": ">= 6.12.0 < 7.0.0"
     }
   ],
-  "pdk-version": "1.18.0",
-  "template-url": "pdk-default#1.18.0",
-  "template-ref": "tags/1.18.0-0-g095317c"
+  "pdk-version": "1.18.1",
+  "template-url": "pdk-default#1.18.1",
+  "template-ref": "tags/1.18.1-0-g3d2e75c"
 }
