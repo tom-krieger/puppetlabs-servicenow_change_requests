@@ -29,7 +29,7 @@
             var httpResponseHeaders = response.getHeaders();
             var httpResponseBody = response.getBody();
 
-            gs.debug('Puppet Code Promotion - http response status_code: ' + httpResponseStatus);
+            gs.info('Puppet Code Promotion - http response status_code: ' + httpResponseStatus);
 
             var res = {
                 statuscode: httpResponseStatus,
@@ -52,7 +52,7 @@
 
         if (result.statuscode == 200) {
             gs.info('Puppet Code Promotion - Logged in successfully');
-            gs.debug('Puppet Code Promotion - Login response message body: ' + result.body);
+            gs.info('Puppet Code Promotion - Login response message body: ' + result.body);
         }
         else {
             gs.error('Puppet Code Promotion - Unable to login! Received statuscode ' + result.statuscode);
@@ -89,7 +89,7 @@
 
         if (result.statuscode == 200 && result.body != '[]') {
             gs.info('Puppet Code Promotion - Pipeline promoted successfully!');
-            gs.debug('Puppet Code Promotion - Promotion response message body: ' + result.body);
+            gs.info('Puppet Code Promotion - Promotion response message body: ' + result.body);
             current.work_notes = 'Puppet code pipeline promoted successfully, checking if approvals are needed...';
             current.update();
         }
@@ -129,20 +129,32 @@
                 // Wait for deploy to reach a status requiring action
                 var timesPolled = 1;
                 var keepLooping = true;
+				gs.sleep(5000);
                 do {
                     result = webrequest(endpoint + '/' + workspace + '/ajax?op=GetDeployment&id=' + deploy, 'GET', '', cookie);
-                    deploymentState = JSON.parse(result.body).deploymentState;
-                    gs.debug('Puppet Code Promotion - Checking deployment ' + deploy + ' status (' + timesPolled++ + '): ' + deploymentState);
-                    if (deploymentState == 'QUEUED' || deploymentState == 'RUNNING') {
-                        keepLooping = true;
-                    }
-                    else {
-                        keepLooping = false;
-                    }
-                    gs.sleep(3000);
+					if (result.statuscode == 200) {
+						deploymentState = JSON.parse(result.body).deploymentState;
+						gs.info('Puppet Code Promotion - Checking deployment ' + deploy + ' status (' + timesPolled++ + '): ' + deploymentState);
+						if (deploymentState == 'QUEUED' || deploymentState == 'RUNNING') {
+							gs.sleep(3000);
+							keepLooping = true;
+						}
+						else {
+							keepLooping = false;
+						}
+					}
+					else {
+						gs.error('Puppet Code Promotion - Unable to check deployment ' + deploy + '! Received statuscode ' + result.statusCode);
+						gs.error('Puppet Code Promotion - Message body: ' + result.body);
+						current.work_notes = 'Puppet Code Deployment ' + deploy + ': Unable to check deployment';
+						current.update();
+						blnOk = false;
+						keepLooping = false;
+						return;
+					}
                 } while (keepLooping && timesPolled < 4800);
 
-                gs.info('Puppet Code Promotion - Deployment ' + deploy + ' reached status: ' + deploymentState);
+				gs.info('Puppet Code Promotion - Deployment ' + deploy + ' reached status: ' + deploymentState);
 
                 if (deploymentState == 'PENDING_APPROVAL') {
                     gs.info('Puppet Code Promotion - Deployment ' + deploy + ' requires approval, proceeding...');
@@ -167,12 +179,12 @@
 
                 if (result.statuscode == 200) {
                     gs.info('Puppet Code Promotion - Deployment ' + deploy + ' approved successfully!');
-                    gs.debug('Puppet Code Promotion - Deployment ' + deploy + ' response message body: ' + result.body);
+                    gs.info('Puppet Code Promotion - Deployment ' + deploy + ' response message body: ' + result.body);
                     current.work_notes = 'Puppet Code Deployment ' + deploy + ' approved successfully';
                     current.update();
                 }
                 else {
-                    gs.error('Puppet Code Promotion - Unable to approve deployment ' + deploy + '! Received statuscode ' + result.info.statusCode);
+                    gs.error('Puppet Code Promotion - Unable to approve deployment ' + deploy + '! Received statuscode ' + result.statusCode);
                     gs.error('Puppet Code Promotion - Message body: ' + result.body);
                     current.work_notes = 'Puppet Code Deployment ' + deploy + ': Unable to approve deployment';
                     current.update();
@@ -186,8 +198,8 @@
                 do {
                     result = webrequest(endpoint + '/' + workspace + '/ajax?op=GetDeployment&id=' + deploy, 'GET', '', cookie);
                     deploymentState = JSON.parse(result.body).deploymentState;
-                    gs.debug('Puppet Code Promotion - Checking deployment ' + deploy + ' status (' + timesPolled++ + '): ' + deploymentState);
-                    if (deploymentState == 'APPROVED') {
+                    gs.info('Puppet Code Promotion - Checking deployment ' + deploy + ' status (' + timesPolled++ + '): ' + deploymentState);
+                    if (deploymentState == 'APPROVED' || deploymentState == 'RUNNING') {
                         keepLooping = true;
                     }
                     else {
