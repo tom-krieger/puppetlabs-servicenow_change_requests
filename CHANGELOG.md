@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## Release 0.1.6
+
+**Bugfixes**
+
+Account for `compileFailed` key in Impact Analysis node report always existing in latest version of CD4PE 4.x
+
 ## Release 0.1.5
 
 **Features**
