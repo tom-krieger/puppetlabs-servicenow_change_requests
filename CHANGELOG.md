@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 
+## Release 0.2.1
+
+**Features**
+- Quebec support. Note that this requires updating the custom deployment policy content in your control repo with the newer content provided by this module's update. 
+
 ## Release 0.2.0
 
 **Features**
