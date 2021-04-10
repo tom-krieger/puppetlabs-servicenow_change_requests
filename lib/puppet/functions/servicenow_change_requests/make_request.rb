@@ -6,24 +6,16 @@ Puppet::Functions.create_function(:'servicenow_change_requests::make_request') d
   dispatch :make_request do
     required_param 'String', :endpoint
     required_param 'String', :type
+    required_param 'Hash', :proxy
     required_param 'String', :username
     required_param 'String', :password # 'Sensitive[String]' when Sensitive
     optional_param 'Hash', :payload
   end
 
-  def make_request(endpoint, type, username, password, payload = nil)
+  def make_request(endpoint, type, proxy, username, password, payload = nil)
     uri = URI.parse(endpoint)
-
-    connection = Net::HTTP.new(uri.host, uri.port)
-    if uri.scheme == 'https'
-      connection.use_ssl = true
-    end
-
-    connection.read_timeout = 60
-
     max_attempts = 3
     attempts = 0
-
     while attempts < max_attempts
       attempts += 1
       begin
@@ -45,7 +37,22 @@ Puppet::Functions.create_function(:'servicenow_change_requests::make_request') d
         request.basic_auth(username, password) # password.unwrap when Sensitive
         request['Content-Type'] = 'application/json'
         request['Accept'] = 'application/json'
-        response = connection.request(request)
+
+        if proxy['enabled'] == true
+          proxy_conn = Net::HTTP::Proxy(
+            proxy['host'],
+            proxy['port'],
+          )
+          response = proxy_conn.start(uri.host, uri.port, :use_ssl => (uri.scheme == 'https')) do |http|
+            http.read_timeout = 60
+            http.request(request)
+          end
+        else
+          connection = Net::HTTP.new(uri.host, uri.port)
+          connection.use_ssl = true if uri.scheme == 'https'
+          connection.read_timeout = 60
+          response = connection.request(request)
+        end
       rescue SocketError => e
         raise Puppet::Error, "Could not connect to the ServiceNow endpoint at #{uri.host}: #{e.inspect}", e.backtrace
       end
