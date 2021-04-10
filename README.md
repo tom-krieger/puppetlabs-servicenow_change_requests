@@ -1,8 +1,6 @@
 ## Overview
 
 This module helps you automate change requests in ServiceNow from Continuous Delivery for Puppet Enterprise (CD4PE) pipelines. The module has been tested for compatibility with the following ServiceNow versions:
-* Madrid
-* New York
 * Orlando
 * Paris
 * Quebec
@@ -23,11 +21,12 @@ Finally, this README provides the instructions for getting the integration up & 
 
 ## Setup
 
-### System Requirements
+### System Requirements & Compatibility
 
-* Puppet Enterprise 2019.2.0 or higher
-* CD4PE 3.8.0 or higher
-* ServiceNow Madrid or higher
+These are the requirements for the latest version of the module, see the [Compatibility matrix](https://github.com/puppetlabs/puppetlabs-servicenow_change_requests/blob/master/COMPATIBILITY.md) for more specific details.
+* Puppet Enterprise 2019.8.3 or higher
+* CD4PE 3.13.4 or higher
+* ServiceNow Orlando or higher
 
 
 ### Preparing ServiceNow
