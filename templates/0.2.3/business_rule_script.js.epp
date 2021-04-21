@@ -1,5 +1,5 @@
 (function executeRule(current, previous /*null when async*/) {
-
+// BR_Version: 0.2.3
     function GetIDValue(table, displayValue) {
 		var rec = new GlideRecord(table);
 		var dn = gs.getDisplayColumn(table);
@@ -55,7 +55,7 @@
 		}
 
 		gs.info('Puppet Code Promotion - Logging in to ' + endpoint);
-        result = webrequest(endpoint + '/login', 'POST', postData, '');
+        result = webrequest(endpoint + '/cd4pe/login', 'POST', postData, '');
 
         if (result.statuscode == 200) {
             gs.info('Puppet Code Promotion - Logged in successfully');
