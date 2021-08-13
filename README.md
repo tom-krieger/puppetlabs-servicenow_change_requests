@@ -1,9 +1,9 @@
 ## Overview
 
 This module helps you automate change requests in ServiceNow from Continuous Delivery for Puppet Enterprise (CD4PE) pipelines. The module has been tested for compatibility with the following ServiceNow versions:
-* Orlando
 * Paris
 * Quebec
+* Rome
 
 The intended workflow that this module enables, is as follows:
 
