@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 
+## Release 0.3.1
+
+**Bugfixes**
+- Fixes a bug in the order of parameters which would cause an error while waiting for the CI worker to finish associating the CIs with the Change Request, resulting in a `undefined method '[]' for nil:NilClass` error. To implement this fix, you need to replace the content in `site-modules/deployments` in your control repo with the contents in `files/deployments` of this module.
+
 ## Release 0.3.0
 
 **Features**
