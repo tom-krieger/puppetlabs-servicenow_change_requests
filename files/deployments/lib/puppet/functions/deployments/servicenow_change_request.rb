@@ -112,7 +112,7 @@ Puppet::Functions.create_function(:'deployments::servicenow_change_request') do
         assoc_ci_worker_uri = "#{endpoint}/api/sn_chg_rest/change/worker/#{assoc_ci_worker['result']['worker']['sysId']}"
         while assoc_ci_worker['result']['state']['value'] < 3
           sleep 3
-          assoc_ci_response = make_request(assoc_ci_worker_uri, :get, proxy, username, oauth_token, password)
+          assoc_ci_response = make_request(assoc_ci_worker_uri, :get, proxy, username, password, oauth_token)
           assoc_ci_worker = JSON.parse(assoc_ci_response.body)
         end
         raise Puppet::Error, "Failed to associate CI's, got these error(s): #{assoc_ci_worker['result']['messages']['errorMessages']}" unless assoc_ci_worker['result']['state']['value'] == 3
