@@ -211,7 +211,7 @@ Puppet::Functions.create_function(:'deployments::servicenow_change_request') do
             proxy['host'],
             proxy['port'],
           )
-          response = proxy_conn.start(uri.host, uri.port, :use_ssl => (uri.scheme == 'https')) do |http|
+          response = proxy_conn.start(uri.host, uri.port, :use_ssl => (uri.scheme == 'https')) do |http| # rubocop:disable Style/HashSyntax
             http.read_timeout = 60
             http.request(request)
           end

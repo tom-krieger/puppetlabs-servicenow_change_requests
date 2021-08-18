@@ -36,7 +36,7 @@ Puppet::Functions.create_function(:'servicenow_change_requests::make_request') d
           raise Puppet::Error, "servicenow_change_request#make_request called with invalid request type #{type}"
         end
         if oauth_token.unwrap.to_s.strip.empty?
-          request.basic_auth(username, password.unwrap) # password.unwrap when Sensitive
+          request.basic_auth(username, password.unwrap)
         else
           request['Authorization'] = "Bearer #{oauth_token.unwrap}"
         end
@@ -48,7 +48,7 @@ Puppet::Functions.create_function(:'servicenow_change_requests::make_request') d
             proxy['host'],
             proxy['port'],
           )
-          response = proxy_conn.start(uri.host, uri.port, :use_ssl => (uri.scheme == 'https')) do |http|
+          response = proxy_conn.start(uri.host, uri.port, :use_ssl => (uri.scheme == 'https')) do |http| # rubocop:disable Style/HashSyntax
             http.read_timeout = 60
             http.request(request)
           end
