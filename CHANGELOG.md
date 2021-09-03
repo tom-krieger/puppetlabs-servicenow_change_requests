@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 
+## Release 0.3.2
+
+**Improvements**
+- Updates the `snow_` moniker in parameter names to `now_`, aligning to ServiceNow shorthand. Note that if you already have the `servicenow_integration` deployment policy in your pipeline, you will need to remove & re-add it to see the parameter names update.
+
 ## Release 0.3.1
 
 **Bugfixes**
