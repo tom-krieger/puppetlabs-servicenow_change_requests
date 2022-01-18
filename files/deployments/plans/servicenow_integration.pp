@@ -137,22 +137,23 @@ plan deployments::servicenow_integration(
     Please ensure a valid stage name is specified!", 'stage_not_found_error')
   }
   $promote_stage_number = $promote_stage[0]['stageNum']
-  $content = {
-    '_now_endpoint'        => $_now_endpoint,
-    'proxy'                => $proxy,
-    'now_username'         => $now_username,
-    'now_password'         => $now_password,
-    'now_oauth_token'      => $now_oauth_token,
-    'report'               => $report,
-    'ia_url'               => $ia_url,
-    'stage_to_promote_to'  => $stage_to_promote_to,
-    'promote_stage_number' => $promote_stage_number,
-    'assignment_group'     => $assignment_group,
-    'connection_alias'     => $connection_alias,
-    'auto_create_ci'       => $auto_create_ci,
-    'ia_csv'               => $ia_csv['csv']
-  }
-  # Debugging: cd4pe_deployments::create_custom_deployment_event(to_json($content))
+  # ** For debugging only **
+  # $content = {
+  #   '_now_endpoint'        => $_now_endpoint,
+  #   'proxy'                => $proxy,
+  #   'now_username'         => $now_username,
+  #   'now_password'         => $now_password,
+  #   'now_oauth_token'      => $now_oauth_token,
+  #   'report'               => $report,
+  #   'ia_url'               => $ia_url,
+  #   'stage_to_promote_to'  => $stage_to_promote_to,
+  #   'promote_stage_number' => $promote_stage_number,
+  #   'assignment_group'     => $assignment_group,
+  #   'connection_alias'     => $connection_alias,
+  #   'auto_create_ci'       => $auto_create_ci,
+  #   'ia_csv'               => $ia_csv['csv']
+  # }
+  # cd4pe_deployments::create_custom_deployment_event(to_json($content))
 
   # Trigger Change Request workflow in ServiceNow DevOps
   cd4pe_deployments::create_custom_deployment_event('Creating ServiceNow Change Request...')
