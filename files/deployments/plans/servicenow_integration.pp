@@ -103,7 +103,7 @@ plan deployments::servicenow_integration(
     $ia_envs_report = $ia_report['results'].map |$ia_env_report| {
       $impacted_nodes_result = cd4pe_deployments::search_impacted_nodes($ia_env_report['IA_resultId'])
       $impacted_nodes = cd4pe_deployments::evaluate_result($impacted_nodes_result)
-      cd4pe_deployments::create_custom_deployment_event("Impact Analysis for environment '${ia_env_report['IA_environment']}' contains ${impacted_nodes['rows'].length} impacted nodes...")
+      cd4pe_deployments::create_custom_deployment_event("Impact Analysis for environment '${ia_env_report['IA_environment']}' contains ${impacted_nodes['rows'].length} impacted nodes...") # lint:ignore:140chars
       deployments::report_impacted_nodes($ia_env_report, $impacted_nodes, $max_changes_per_node)
     }
 
