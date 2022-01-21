@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## Release 0.4.1
+**Bugfixes**
+- Ensures that when IA runs but returns no changes, a CSV export still results in an attachment to the ServiceNow Change Request, containing the text `Impact analysis did not detect any resource changes`.
+
 ## Release 0.4.0
 
 **Features**
