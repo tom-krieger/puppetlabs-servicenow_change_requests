@@ -111,14 +111,18 @@ plan deployments::servicenow_integration(
     if $attach_ia_csv {
       cd4pe_deployments::create_custom_deployment_event('Exporting Impact Analysis results to CSV...')
       $ia_csv_result = cd4pe_deployments::get_impact_analysis_csv($impact_analysis_id)
-      $ia_csv = cd4pe_deployments::evaluate_result($ia_csv_result)
+      $ia_csv_hash = cd4pe_deployments::evaluate_result($ia_csv_result)
+      $ia_csv = $ia_csv_hash['csv'] ? {
+        ''      => {'csv'=>'Impact analysis did not detect any resource changes'},
+        default => $ia_csv_hash,
+      }
     } else {
       $ia_csv = {'csv'=>''}
     }
   } else {
     $ia_envs_report = Tuple({})
     $ia_url = 'No Impact Analysis performed'
-    $ia_csv = {'csv'=>'Impact analysis didn\'t detect any resource changes'}
+    $ia_csv = {'csv'=>'No Impact Analysis performed'}
   }
 
   # Combine all reports into a single hash
