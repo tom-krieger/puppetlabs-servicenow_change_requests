@@ -3,7 +3,7 @@
 This module helps you automate change requests in ServiceNow from Continuous Delivery for Puppet Enterprise (CD4PE) pipelines. The module has been tested for compatibility with the following ServiceNow versions:
 * Paris
 * Quebec
-* Rome
+* Rome (recommended)
 
 The intended workflow that this module enables, is as follows:
 
@@ -134,6 +134,9 @@ Once the custom deployment policy is available, add it to your `master` pipeline
    * `assignment_group`: the group in ServiceNow to which the change is assigned (defaults to `Change Management`)
    * `connection_alias`: the name of the ServiceNow connection alias that should be used for orchestration after the change request is approved (defaults to `Puppet_Code`)
    * `auto_create_ci`: set to `true` to automatically create CI's in ServiceNow for nodes identified as affected by Impact Analysis, if those nodes do not exist as CI's in ServiceNow (defaults to `false`)
+   * `proxy_host`: fqdn of the proxy server to use for outbound communications to ServiceNow. Only set this parameter if you need to use a proxy server. Note that the proxy server must not request authentication.
+   * `proxy_port`: port to use on the proxy server, if configured in `proxy_host`.
+   * `attach_ia_csv`: set to `true` to automatically attach a CSV export of the Impact Analysis to the ServiceNow Change Request.
 7. Click `Add stage` to complete the wizard.
 8. Click the `Auto-promote` checkbox between the "Impact Analysis" and the "ServiceNow Change Request" stage.
 9. Ensure no auto-promotion occurs between the "ServiceNow Change Request" stage and the "Deploy to Production" stage.

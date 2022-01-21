@@ -1,3 +1,5 @@
+# rubocop:disable Style/FrozenStringLiteralComment
+# rubocop:enable Style/FrozenStringLiteralComment
 require 'net/http'
 require 'uri'
 require 'cgi'
@@ -17,9 +19,10 @@ Puppet::Functions.create_function(:'deployments::servicenow_change_request') do
     required_param 'String',    :assignment_group
     required_param 'String',    :connection_alias
     required_param 'Boolean',   :auto_create_ci
+    required_param 'String',    :ia_csv_export
   end
 
-  def servicenow_change_request(endpoint, proxy, username, password, oauth_token, report, ia_url, promote_to_stage_name, promote_to_stage_id, assignment_group, connection_alias, auto_create_ci)
+  def servicenow_change_request(endpoint, proxy, username, password, oauth_token, report, ia_url, promote_to_stage_name, promote_to_stage_id, assignment_group, connection_alias, auto_create_ci, ia_csv_export) # rubocop:disable Layout/LineLength
     # Map facts to populate when auto-creating CI's
     fact_map = {
       # PuppetDB fact => ServiceNow CI field
@@ -44,6 +47,7 @@ Puppet::Functions.create_function(:'deployments::servicenow_change_request') do
     raise Puppet::Error, "1-Received unexpected response from the ServiceNow endpoint: #{request_response.code} #{request_response.body}" unless request_response.is_a?(Net::HTTPSuccess)
 
     changereq = JSON.parse(request_response.body)
+    call_function('cd4pe_deployments::create_custom_deployment_event', "Created Normal Change Request #{changereq['result']['number']['value']}")
 
     # Next, we build a list of CIs that Impact Analysis flagged as impacted
     array_of_cis = []
@@ -110,12 +114,24 @@ Puppet::Functions.create_function(:'deployments::servicenow_change_request') do
         # This is New York or newer, continue to process response
         assoc_ci_worker = JSON.parse(assoc_ci_response.body)
         assoc_ci_worker_uri = "#{endpoint}/api/sn_chg_rest/change/worker/#{assoc_ci_worker['result']['worker']['sysId']}"
-        while assoc_ci_worker['result']['state']['value'] < 3
+        repeats = 0
+        while assoc_ci_worker['result']['state']['value'] < 3 && repeats < 100
           sleep 3
+          repeats += 1
           assoc_ci_response = make_request(assoc_ci_worker_uri, :get, proxy, username, password, oauth_token)
           assoc_ci_worker = JSON.parse(assoc_ci_response.body)
         end
-        raise Puppet::Error, "Failed to associate CI's, got these error(s): #{assoc_ci_worker['result']['messages']['errorMessages']}" unless assoc_ci_worker['result']['state']['value'] == 3
+        case assoc_ci_worker['result']['state']['value']
+        when 1
+          raise Puppet::Error, "Failed to associate CI's, the worker job did not start within 5 minutes."
+        when 2
+          raise Puppet::Error, "Failed to associate CI's, the worker job did not complete within 5 minutes."
+        when 3
+          # Completed successfully, do nothing
+          call_function('cd4pe_deployments::create_custom_deployment_event', 'Associated impacted CIs to the Change Request')
+        else
+          raise Puppet::Error, "Failed to associate CI's, got these error(s): #{assoc_ci_worker['result']['messages']['errorMessages']}"
+        end
       elsif assoc_ci_response.code == '400' && JSON.parse(assoc_ci_response.body)['error']['message'].start_with?('Requested URI does not represent any resource')
         # This is a pre-New York version (e.g. Madrid), use the task_ci table instead
         array_of_cis.each do |ci|
@@ -124,6 +140,7 @@ Puppet::Functions.create_function(:'deployments::servicenow_change_request') do
           task_ci_response = make_request(task_ci_uri, :post, proxy, username, password, oauth_token, task_ci_payload)
           raise Puppet::Error, "4-Received unexpected response from the ServiceNow endpoint: #{task_ci_response.code} #{task_ci_response.body}" unless task_ci_response.is_a?(Net::HTTPSuccess)
         end
+        call_function('cd4pe_deployments::create_custom_deployment_event', 'Associated impacted CIs to the Change Request')
       else
         # A real error occurred, raise the error
         raise Puppet::Error, "5-Received unexpected response from the ServiceNow endpoint: #{assoc_ci_response.code} #{assoc_ci_response.body}"
@@ -175,9 +192,19 @@ Puppet::Functions.create_function(:'deployments::servicenow_change_request') do
 
     change_req_url_res = make_request(change_req_url, :patch, proxy, username, password, oauth_token, payload)
     raise Puppet::Error, "7-Received unexpected response from the ServiceNow endpoint: #{change_req_url_res.code} #{change_req_url_res.body}" unless change_req_url_res.is_a?(Net::HTTPSuccess)
+
+    call_function('cd4pe_deployments::create_custom_deployment_event', 'Updated Change Request with Impact Analysis info and moved state to Assess')
+
+    unless ia_csv_export.empty? # rubocop:disable Style/GuardClause
+      attachment_url = "#{endpoint}/api/now/attachment/file?table_name=change_request&table_sys_id=#{changereq['result']['sys_id']['value']}&file_name=impact_analysis_result.csv"
+      attachment_res = make_request(attachment_url, :post, proxy, username, password, oauth_token, ia_csv_export, 'text/csv')
+      raise Puppet::Error, "8-Received unexpected response from the ServiceNow endpoint: #{attachment_res.code} #{attachment_res.body}" unless attachment_res.is_a?(Net::HTTPSuccess)
+
+      call_function('cd4pe_deployments::create_custom_deployment_event', 'Attached Impact Analysis CSV export to the Change Request')
+    end
   end
 
-  def make_request(endpoint, type, proxy, username, password, oauth_token, payload = nil)
+  def make_request(endpoint, type, proxy, username, password, oauth_token, payload = nil, content_type = 'application/json')
     uri = URI.parse(endpoint)
     max_attempts = 3
     attempts = 0
@@ -192,10 +219,12 @@ Puppet::Functions.create_function(:'deployments::servicenow_change_request') do
           request = Net::HTTP::Get.new(uri.request_uri)
         when :post
           request = Net::HTTP::Post.new(uri.request_uri)
-          request.body = payload.to_json unless payload.nil?
+          request.body = payload unless payload.nil?
+          request.body = payload.to_json if content_type == 'application/json' && !payload.nil?
         when :patch
           request = Net::HTTP::Patch.new(uri.request_uri)
-          request.body = payload.to_json unless payload.nil?
+          request.body = payload unless payload.nil?
+          request.body = payload.to_json if content_type == 'application/json' && !payload.nil?
         else
           raise Puppet::Error, "servicenow_change_request#make_request called with invalid request type #{type}"
         end
@@ -204,7 +233,7 @@ Puppet::Functions.create_function(:'deployments::servicenow_change_request') do
         else
           request['Authorization'] = "Bearer #{oauth_token.unwrap.delete_prefix('"').delete_suffix('"')}"
         end
-        request['Content-Type'] = 'application/json'
+        request['Content-Type'] = content_type
         request['Accept'] = 'application/json'
         if proxy['enabled'] == true
           proxy_conn = Net::HTTP::Proxy(

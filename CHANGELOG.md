@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file.
 
+## Release 0.4.0
+
+**Features**
+- Adds the option `attach_ia_csv` to the `deployments::servicenow_integration` custom deployment policy for CD4PE. When this option is set to `True`, a CSV export of the Impact Analysis will be attached to the ServiceNow Change Request.  
+
+**Improvements**
+- Adds logging of activities performed by the `deployments::servicenow_integration` custom deployment policy in the deployment, in the form of custom events.
+
+**Implementation Notes**
+- Version 0.4.0 of this module **requires** CD4PE 4.11.0 or higher to function.
+- To implement this updated custom deployment policy, you need to replace the content in `site-modules/deployments` in your control repo with the contents of `files/deployments` of this module.
+- If you already have the `servicenow_integration` custom deployment policy in your pipeline, you will need to remove & re-add it to see the new parameter option appear.
+
 ## Release 0.3.2
 
 **Improvements**
