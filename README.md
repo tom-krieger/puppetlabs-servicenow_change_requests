@@ -23,9 +23,9 @@ Finally, this README provides the instructions for getting the integration up & 
 
 ### System Requirements & Compatibility
 
-These are the requirements for the latest version of the module, see the [Compatibility matrix](https://github.com/puppetlabs/puppetlabs-servicenow_change_requests/blob/master/COMPATIBILITY.md) for more specific details.
-* Puppet Enterprise 2019.8.5 or higher
-* CD4PE 4.8.0 or higher
+These are the minimum requirements for the latest version of the module, see the [Compatibility matrix](https://github.com/puppetlabs/puppetlabs-servicenow_change_requests/blob/master/COMPATIBILITY.md) for more specific details.
+* Puppet Enterprise 2019.8.x / 2021.x
+* CD4PE 4.11.0 or higher
 * ServiceNow Paris or higher
 
 ### Preparing ServiceNow
