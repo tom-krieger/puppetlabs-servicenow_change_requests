@@ -2,7 +2,7 @@
 
 | Module version | Date released | PE min version | PE max version | CD4PE min version | CD4PE max version | ServiceNow min version | ServiceNow max version | Remarks |
 | -------------- | ------------- | -------------- | -------------- | ----------------- | ----------------- | ---------------------- | --------------------- | ------- |
-| 0.4.0 | 2022/01/21 | 2019.8.9 | 2021.4.0+ | 4.11.1 | 4.11.1+ | Paris | Rome | Recommended to use Rome |
+| 0.4.1 | 2022/01/21 | 2019.8.9 | 2021.4.0+ | 4.11.1 | 4.11.1+ | Paris | Rome | Recommended to use Rome |
 | 0.3.2 | 2021/09/03 | 2019.8.8 | 2021.3.0 | 4.8.0 | 4.10.5 | Paris | Rome | Recommended to use Rome |
 | 0.3.1 | 2021/08/17 | 2019.8.5 | 2021.2.0 | 4.8.0 | 4.10.5 | Paris | Rome | Recommended to use Rome |
 | 0.3.0 | 2021/08/13 | 2019.8.5 | 2021.2.0 | 4.8.0 | 4.10.5 | Paris | Rome | Recommended to use Rome |
