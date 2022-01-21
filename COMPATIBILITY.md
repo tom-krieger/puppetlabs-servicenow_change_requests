@@ -2,10 +2,10 @@
 
 | Module version | Date released | PE min version | PE max version | CD4PE min version | CD4PE max version | ServiceNow min version | ServiceNow max version | Remarks |
 | -------------- | ------------- | -------------- | -------------- | ----------------- | ----------------- | ---------------------- | --------------------- | ------- |
-| 0.4.0 | 2022/01/18 | 2019.8.9 | 2021.1.4+ | 4.11.0 | 4.11.0+ | Paris | Rome | Recommended to use Rome over Quebec |
-| 0.3.2 | 2021/09/03 | 2019.8.8 | 2021.1.3 | 4.8.0 | 4.10.5 | Paris | Rome | Recommended to use Rome over Quebec |
-| 0.3.1 | 2021/08/17 | 2019.8.5 | 2021.1.2 | 4.8.0 | 4.10.5 | Paris | Rome | Recommended to use Rome over Quebec |
-| 0.3.0 | 2021/08/13 | 2019.8.5 | 2021.1.2 | 4.8.0 | 4.10.5 | Paris | Rome | Recommended to use Rome over Quebec |
+| 0.4.0 | 2022/01/21 | 2019.8.9 | 2021.4.0+ | 4.11.1 | 4.11.1+ | Paris | Rome | Recommended to use Rome |
+| 0.3.2 | 2021/09/03 | 2019.8.8 | 2021.3.0 | 4.8.0 | 4.10.5 | Paris | Rome | Recommended to use Rome |
+| 0.3.1 | 2021/08/17 | 2019.8.5 | 2021.2.0 | 4.8.0 | 4.10.5 | Paris | Rome | Recommended to use Rome |
+| 0.3.0 | 2021/08/13 | 2019.8.5 | 2021.2.0 | 4.8.0 | 4.10.5 | Paris | Rome | Recommended to use Rome |
 | 0.2.3 | 2021/04/09 | 2019.8.3 | 2021.1.0 | 3.13.4, 4.1.2 | 3.13.6, 4.5.0 | Orlando | Quebec | Slight bug in ServiceNow Quebec, where it creates 4 canceled change tasks upon completion of code promotion. When running a version less than 4.5.0 of CD4PE, an extra br_version parameter must be specified for the prep_servicenow plan (see README) |
 | 0.2.2 | 2021/04/09 | 2019.8.3 | 2021.0.0 | 3.13.4, 4.1.2 | 3.13.6, 4.4.1 | Orlando | Quebec | Slight bug in ServiceNow Quebec, where it creates 4 canceled change tasks upon completion of code promotion |
 | 0.2.1 | 2021/03/17 | 2019.8.3 | 2021.0.0 | 3.13.2, 4.0.1 | 3.13.5, 4.4.0 | Orlando | Quebec | Slight bug in ServiceNow Quebec, where it creates 4 canceled change tasks upon completion of code promotion |
