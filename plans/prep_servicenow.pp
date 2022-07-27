@@ -24,6 +24,8 @@
 #   If you need to connect via a proxy server, specify its FQDN here
 # @param [Optional[Integer]] proxy_port
 #   If you need to connect via a proxy server, specify its port here
+# @param String application
+#   ServiceNow application, defaults to 'global'
 # 
 plan servicenow_change_requests::prep_servicenow(
   String $now_endpoint,
@@ -36,7 +38,8 @@ plan servicenow_change_requests::prep_servicenow(
   Optional[String] $connection_suffix = undef,
   Optional[String] $proxy_host = undef,
   Optional[Integer] $proxy_port = undef,
-  Optional[String] $br_version = '0.2.3'
+  Optional[String] $br_version = '0.2.3',
+  String $application = 'global'
 ){
   # Parse flexible parameters
   $_now_endpoint = $now_endpoint[0,8] ? {
@@ -72,7 +75,7 @@ plan servicenow_change_requests::prep_servicenow(
 
   # Check if 'Puppet Code' is listed as a change category
   $category_check_uri = "${_now_endpoint}/api/now/table/sys_choice?sysparm_query=name=change_request&element=category&language=en"
-  $category_check_result = servicenow_change_requests::make_request($category_check_uri, 'get', $proxy, $admin_user, $admin_password, $oauth_token)
+  $category_check_result = servicenow_change_requests::make_request($category_check_uri, 'get', $proxy, $admin_user, $admin_password, $oauth_token) # lint:ignore:140chars
   unless $category_check_result['code'] == 200 {
     fail("Unable to request change categories! Got error ${category_check_result['code']} with message ${category_check_result['body']}")
   }
@@ -97,10 +100,11 @@ plan servicenow_change_requests::prep_servicenow(
       'inactive' => 'false',
       'name'     => 'change_request',
       'value'    => 'Puppet Code',
-      'element'  => 'category'
+      'element'  => 'category',
+      'application' => $application
     }
     $new_category_uri = "${_now_endpoint}/api/now/table/sys_choice"
-    $new_category_result = servicenow_change_requests::make_request($new_category_uri, 'post', $proxy, $admin_user, $admin_password, $oauth_token, $new_category)
+    $new_category_result = servicenow_change_requests::make_request($new_category_uri, 'post', $proxy, $admin_user, $admin_password, $oauth_token, $new_category) # lint:ignore:140chars
     unless $new_category_result['code'] == 201 {
       fail("Unable to add Change request category 'Puppet Code'! Got error ${new_category_result['code']} with message ${new_category_result['body']}") # lint:ignore:140chars
     }
@@ -152,6 +156,7 @@ plan servicenow_change_requests::prep_servicenow(
       'rest_variables'    => '',
       'name'              => 'Puppet - Promote code after approval',
       'role_conditions'   => '',
+      'application'       => $application
     }
     $new_rule_uri = "${_now_endpoint}/api/now/table/sys_script"
     $new_rule_result = servicenow_change_requests::make_request($new_rule_uri, 'post', $proxy, $admin_user, $admin_password, $oauth_token, $new_rule)
@@ -213,6 +218,7 @@ plan servicenow_change_requests::prep_servicenow(
       'type'                   => 'connection',
       'multiple_connections'   => 'false',
       'name'                   => $alias_name,
+      'application'            => $application
     }
     $new_alias_uri = "${_now_endpoint}/api/now/table/sys_alias"
     $new_alias_result = servicenow_change_requests::make_request($new_alias_uri, 'post', $proxy, $admin_user, $admin_password, $oauth_token, $new_alias)
@@ -245,6 +251,7 @@ plan servicenow_change_requests::prep_servicenow(
       'active'                  => 'true',
       'name'                    => $cred_name,
       'sys_class_name'          => 'basic_auth_credentials',
+      'application'             => 'global'
     }
     $new_cred_uri = "${_now_endpoint}/api/now/table/discovery_credentials"
     $new_cred_result = servicenow_change_requests::make_request($new_cred_uri, 'post', $proxy, $admin_user, $admin_password, $oauth_token, $new_cred)
@@ -280,6 +287,7 @@ plan servicenow_change_requests::prep_servicenow(
       'host'               => $cd4pe_endpoint,
       'name'               => $conn_name,
       'connection_timeout' => '0',
+      'application'        => $application
     }
     $new_conn_uri = "${_now_endpoint}/api/now/table/sys_connection"
     $new_conn_result = servicenow_change_requests::make_request($new_conn_uri, 'post', $proxy, $admin_user, $admin_password, $oauth_token, $new_conn)
